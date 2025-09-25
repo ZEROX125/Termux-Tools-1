@@ -545,6 +545,66 @@
             border: 1px solid #ff6a6a;
             color: #ff6a6a;
         }
+        
+        /* جدول الإدارة */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .admin-table th, .admin-table td {
+            padding: 10px;
+            text-align: right;
+            border: 1px solid var(--terminal-border);
+        }
+        
+        .admin-table th {
+            background-color: #333;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            margin: 2px;
+        }
+        
+        .delete-btn {
+            background: linear-gradient(135deg, #ff6666, #cc0000);
+        }
+        
+        /* نافذة الشحن */
+        .charge-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .charge-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--terminal-border);
+            width: 90%;
+            max-width: 400px;
+            border-radius: 5px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .close-charge {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #cccccc;
+        }
     </style>
 </head>
 <body>
@@ -562,6 +622,7 @@
                 </div>
                 <div id="userMenu" style="display: none;">
                     <span id="userName"></span>
+                    <button class="submit-btn" onclick="showChargeModal()" style="margin-right: 10px;">شحن الرصيد</button>
                     <button class="submit-btn" onclick="logout()" style="margin-right: 10px;">تسجيل الخروج</button>
                 </div>
             </div>
@@ -613,7 +674,7 @@
             <div class="tool-price">السعر: <span id="modalToolPrice">0</span> SDG</div>
             <button class="buy-btn" id="buyBtn" onclick="buyTool()">شراء الأداة</button>
             <div class="insufficient-balance" id="insufficientBalance" style="display: none;">
-                ليس لديك رصيد كافٍ. <a href="#" onclick="showBalanceModal()" style="color: #6aafff;">اشحن الآن</a>
+                ليس لديك رصيد كافٍ. <a href="#" onclick="showChargeModal()" style="color: #6aafff;">اشحن الآن</a>
             </div>
         </div>
     </div>
@@ -677,6 +738,22 @@
         </div>
     </div>
 
+    <!-- نافذة شحن الرصيد -->
+    <div class="charge-modal" id="chargeModal">
+        <div class="charge-content">
+            <span class="close-charge" onclick="closeChargeModal()">&times;</span>
+            <h3 style="text-align: center; margin-bottom: 20px;">شحن الرصيد</h3>
+            <div class="form-group">
+                <label for="chargeAmount">المبلغ المطلوب شحنه (SDG)</label>
+                <input type="number" id="chargeAmount" placeholder="ادخل المبلغ" value="13000">
+            </div>
+            <button class="submit-btn" onclick="chargeBalance()" style="width: 100%;">شحن الرصيد</button>
+            <div class="form-footer">
+                <p>سيتم تحويلك إلى واتساب لإتمام عملية الدفع</p>
+            </div>
+        </div>
+    </div>
+
     <!-- لوحة تحكم الأدمن -->
     <section class="admin-panel" id="adminPanel">
         <div class="admin-section">
@@ -690,13 +767,13 @@
             
             <div class="tab-content active" id="usersTab">
                 <h4>قائمة المستخدمين</h4>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <table class="admin-table">
                     <thead>
-                        <tr style="background-color: #333;">
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">الاسم</th>
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">البريد الإلكتروني</th>
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">الرصيد</th>
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">الإجراءات</th>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>الرصيد</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="usersTable">
@@ -707,13 +784,13 @@
             
             <div class="tab-content" id="toolsTab">
                 <h4>قائمة الأدوات</h4>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <table class="admin-table">
                     <thead>
-                        <tr style="background-color: #333;">
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">اسم الأداة</th>
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">السعر</th>
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">الحالة</th>
-                            <th style="padding: 10px; text-align: right; border: 1px solid var(--terminal-border);">الإجراءات</th>
+                        <tr>
+                            <th>اسم الأداة</th>
+                            <th>السعر</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="adminToolsTable">
@@ -759,7 +836,7 @@
     </footer>
 
     <script>
-        // بيانات الموقع (سيتم استبدالها بقاعدة بيانات في التطبيق الحقيقي)
+        // بيانات الموقع
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let tools = JSON.parse(localStorage.getItem('tools')) || [
             {
@@ -799,12 +876,10 @@
             renderTools();
             checkAuthStatus();
             
-            // إذا كان المستخدم مسجل دخوله، نعرض معلوماته
             if (currentUser) {
                 updateUserDisplay();
             }
             
-            // تأثير الكتابة في الطرفية
             typeTerminalText();
         });
 
@@ -860,7 +935,6 @@
             document.getElementById('modalToolDescription').textContent = tool.description;
             document.getElementById('modalToolPrice').textContent = tool.price;
             
-            // التحقق من رصيد المستخدم
             const buyBtn = document.getElementById('buyBtn');
             const insufficientBalance = document.getElementById('insufficientBalance');
             
@@ -878,9 +952,7 @@
                 insufficientBalance.innerHTML = 'يجب تسجيل الدخول أولاً. <a href="#" onclick="showAuthModal()" style="color: #6aafff;">سجل الدخول الآن</a>';
             }
             
-            // حفظ معرف الأداة المحددة
             buyBtn.setAttribute('data-tool-id', toolId);
-            
             document.getElementById('toolModal').style.display = 'flex';
         }
 
@@ -902,10 +974,8 @@
             if (!tool) return;
             
             if (currentUser.balance >= tool.price) {
-                // خصم السعر من رصيد المستخدم
                 currentUser.balance -= tool.price;
                 
-                // تحديث الرصيد في localStorage
                 const userIndex = users.findIndex(u => u.email === currentUser.email);
                 if (userIndex !== -1) {
                     users[userIndex].balance = currentUser.balance;
@@ -913,34 +983,27 @@
                 }
                 
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                
-                // تحديث عرض الرصيد
                 updateUserDisplay();
                 
-                // إرسال رسالة واتساب
                 const message = `أريد شراء أداة ${tool.name}`;
                 const whatsappUrl = `https://wa.me/213551313863?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
                 
-                // إغلاق النافذة المنبثقة
                 closeModal();
-                
                 showAlert('تم شراء الأداة بنجاح! سيتم التواصل معك عبر واتساب.', 'success');
             } else {
                 showAlert('ليس لديك رصيد كافٍ لشراء هذه الأداة.', 'error');
             }
         }
 
-        // عرض نافذة التسجيل/الدخول
+        // نظام التسجيل والدخول
         function showAuthModal() {
             document.getElementById('authModal').style.display = 'flex';
             switchAuthTab('login');
         }
 
-        // إغلاق نافذة التسجيل/الدخول
         function closeAuthModal() {
             document.getElementById('authModal').style.display = 'none';
-            // مسح الحقول
             document.getElementById('loginEmail').value = '';
             document.getElementById('loginPassword').value = '';
             document.getElementById('registerFirstName').value = '';
@@ -948,31 +1011,23 @@
             document.getElementById('registerEmail').value = '';
             document.getElementById('registerPassword').value = '';
             document.getElementById('registerConfirmPassword').value = '';
-            // إخفاء رسائل الخطأ
             hideAlerts();
         }
 
-        // التبديل بين تبويبي التسجيل والدخول
         function switchAuthTab(tab) {
-            // إخفاء جميع النماذج
             document.querySelectorAll('.auth-form').forEach(form => {
                 form.classList.remove('active');
             });
             
-            // إزالة النشط من جميع التبويبات
             document.querySelectorAll('.auth-tab').forEach(tabElement => {
                 tabElement.classList.remove('active');
             });
             
-            // إظهار النموذج المحدد وإضافة النشط للتبويب
             document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
             document.querySelectorAll('.auth-tab')[tab === 'login' ? 0 : 1].classList.add('active');
-            
-            // إخفاء رسائل الخطأ
             hideAlerts();
         }
 
-        // تسجيل الدخول
         function login() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
@@ -983,9 +1038,9 @@
                 return;
             }
             
-            // التحقق من بيانات الأدمن أولاً
             if (email === adminCredentials.email && password === adminCredentials.password) {
                 currentUser = {
+                    id: 0,
                     firstName: 'Admin',
                     lastName: 'User',
                     email: email,
@@ -1000,7 +1055,6 @@
                 return;
             }
             
-            // البحث عن المستخدم في قاعدة البيانات
             const user = users.find(u => u.email === email && u.password === password);
             
             if (user) {
@@ -1014,7 +1068,6 @@
             }
         }
 
-        // التسجيل
         function register() {
             const firstName = document.getElementById('registerFirstName').value;
             const lastName = document.getElementById('registerLastName').value;
@@ -1038,16 +1091,14 @@
                 return;
             }
             
-            // التحقق من عدم وجود مستخدم بنفس البريد الإلكتروني
             const existingUser = users.find(u => u.email === email);
             if (existingUser) {
                 showAlert('هذا البريد الإلكتروني مسجل بالفعل', 'error', alert);
                 return;
             }
             
-            // إنشاء مستخدم جديد
             const newUser = {
-                id: users.length + 1,
+                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
@@ -1060,14 +1111,12 @@
             
             showAlert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.', 'success', alert);
             
-            // الانتقال إلى تبويب تسجيل الدخول بعد 2 ثانية
             setTimeout(() => {
                 switchAuthTab('login');
                 document.getElementById('loginEmail').value = email;
             }, 2000);
         }
 
-        // تسجيل الخروج
         function logout() {
             currentUser = null;
             localStorage.removeItem('currentUser');
@@ -1075,7 +1124,6 @@
             showAlert('تم تسجيل الخروج بنجاح!', 'success');
         }
 
-        // التحقق من حالة المصادقة
         function checkAuthStatus() {
             const authButtons = document.getElementById('authButtons');
             const userMenu = document.getElementById('userMenu');
@@ -1100,13 +1148,181 @@
             }
         }
 
-        // تحديث عرض معلومات المستخدم
         function updateUserDisplay() {
-            document.getElementById('userName').textContent = currentUser.firstName + ' ' + currentUser.lastName;
-            document.getElementById('userBalance').textContent = currentUser.balance || 0;
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.firstName + ' ' + currentUser.lastName;
+                document.getElementById('userBalance').textContent = currentUser.balance || 0;
+            }
         }
 
-        // عرض رسالة تنبيه
+        // نظام الشحن
+        function showChargeModal() {
+            document.getElementById('chargeModal').style.display = 'flex';
+        }
+
+        function closeChargeModal() {
+            document.getElementById('chargeModal').style.display = 'none';
+            document.getElementById('chargeAmount').value = '13000';
+        }
+
+        function chargeBalance() {
+            const amount = parseInt(document.getElementById('chargeAmount').value);
+            
+            if (!amount || amount <= 0) {
+                showAlert('يرجى إدخال مبلغ صحيح', 'error');
+                return;
+            }
+            
+            const message = `أريد شحن رصيد بقيمة ${amount} SDG لحسابي`;
+            const whatsappUrl = `https://wa.me/213551313863?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            closeChargeModal();
+            showAlert('سيتم التواصل معك عبر واتساب لإتمام عملية الشحن', 'success');
+        }
+
+        // نظام إدارة الأدمن
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabId === 'usersTab') {
+                renderAdminUsers();
+            } else if (tabId === 'toolsTab') {
+                renderAdminTools();
+            }
+        }
+
+        function renderAdminUsers() {
+            const usersTable = document.getElementById('usersTable');
+            usersTable.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.firstName} ${user.lastName}</td>
+                    <td>${user.email}</td>
+                    <td>${user.balance || 0} SDG</td>
+                    <td>
+                        <button class="submit-btn action-btn" onclick="addBalanceToUser(${user.id})">شحن رصيد</button>
+                        <button class="submit-btn action-btn delete-btn" onclick="deleteUser(${user.id})">حذف</button>
+                    </td>
+                `;
+                usersTable.appendChild(row);
+            });
+        }
+
+        function renderAdminTools() {
+            const adminToolsTable = document.getElementById('adminToolsTable');
+            adminToolsTable.innerHTML = '';
+            
+            tools.forEach(tool => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${tool.name}</td>
+                    <td>${tool.price} SDG</td>
+                    <td>${tool.category === 'locked' ? 'مقفولة' : 'مفتوحة'}</td>
+                    <td>
+                        <button class="submit-btn action-btn delete-btn" onclick="deleteTool(${tool.id})">حذف</button>
+                    </td>
+                `;
+                adminToolsTable.appendChild(row);
+            });
+        }
+
+        function addNewTool() {
+            const name = document.getElementById('newToolName').value;
+            const description = document.getElementById('newToolDescription').value;
+            const price = parseInt(document.getElementById('newToolPrice').value);
+            const image = document.getElementById('newToolImage').value;
+            const category = document.getElementById('newToolCategory').value;
+            
+            if (!name || !description || !price || !image) {
+                showAlert('يرجى ملء جميع الحقول', 'error');
+                return;
+            }
+            
+            const newTool = {
+                id: tools.length > 0 ? Math.max(...tools.map(t => t.id)) + 1 : 1,
+                name: name,
+                description: description,
+                price: price,
+                image: image,
+                category: category
+            };
+            
+            tools.push(newTool);
+            localStorage.setItem('tools', JSON.stringify(tools));
+            
+            renderTools();
+            renderAdminTools();
+            
+            document.getElementById('newToolName').value = '';
+            document.getElementById('newToolDescription').value = '';
+            document.getElementById('newToolPrice').value = '13000';
+            document.getElementById('newToolImage').value = '';
+            
+            showAlert('تم إضافة الأداة بنجاح!', 'success');
+        }
+
+        function deleteTool(toolId) {
+            if (confirm('هل أنت متأكد من حذف هذه الأداة؟')) {
+                tools = tools.filter(t => t.id !== toolId);
+                localStorage.setItem('tools', JSON.stringify(tools));
+                
+                renderTools();
+                renderAdminTools();
+                
+                showAlert('تم حذف الأداة بنجاح!', 'success');
+            }
+        }
+
+        function addBalanceToUser(userId) {
+            const amount = prompt('أدخل المبلغ الذي تريد إضافته:');
+            if (!amount || isNaN(amount) || amount <= 0) {
+                showAlert('يرجى إدخال مبلغ صحيح', 'error');
+                return;
+            }
+            
+            const userIndex = users.findIndex(u => u.id === userId);
+            if (userIndex !== -1) {
+                users[userIndex].balance = (users[userIndex].balance || 0) + parseInt(amount);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                if (currentUser && currentUser.id === userId) {
+                    currentUser.balance = users[userIndex].balance;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserDisplay();
+                }
+                
+                renderAdminUsers();
+                showAlert('تم تعبئة الرصيد بنجاح!', 'success');
+            }
+        }
+
+        function deleteUser(userId) {
+            if (confirm('هل أنت متأكد من حذف هذا المستخدم؟')) {
+                users = users.filter(u => u.id !== userId);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                if (currentUser && currentUser.id === userId) {
+                    logout();
+                }
+                
+                renderAdminUsers();
+                showAlert('تم حذف المستخدم بنجاح!', 'success');
+            }
+        }
+
+        // وظائف مساعدة
         function showAlert(message, type, element = null) {
             const alert = element || document.createElement('div');
             alert.className = `alert alert-${type}`;
@@ -1121,15 +1337,11 @@
             }
         }
 
-        // إخفاء جميع رسائل التنبيه
         function hideAlerts() {
             document.querySelectorAll('.alert').forEach(alert => {
                 alert.style.display = 'none';
             });
         }
-
-        // باقي الدوال (نفس الكود السابق) ...
-        // [يتبع باقي الدوال بدون تغيير - التبديل بين التبويبات، إدارة الأدمن، إلخ]
     </script>
 </body>
     </html>
